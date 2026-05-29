@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TORNEO MK11 — Jean Day · CASD JPP</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --blood:#8B0000;--blood-bright:#cc0000;--gold:#FFD700;--gold-dim:#b8960c;
+  --dark:#060608;--dark2:#0e0e12;--dark3:#16161c;--text:#e8e0d0;--text-dim:#888;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--dark);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px);pointer-events:none;z-index:9999}
+#particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ── HERO ── */
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;overflow:hidden;z-index:1}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(139,0,0,0.2) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 80% 20%,rgba(139,0,0,0.1) 0%,transparent 60%)}
+.hero-lines{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hero-lines::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(139,0,0,0.5),rgba(255,215,0,0.4),rgba(139,0,0,0.5),transparent);transform:translateY(-90px)}
+.hero-lines::after{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(139,0,0,0.2),transparent);transform:translateY(90px)}
+
+.hero-tag{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:5px;color:var(--gold);background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.2);padding:6px 20px;border-radius:2px;margin-bottom:1.5rem;animation:fadeDown 1s ease both;text-transform:uppercase}
+.hero-title{font-family:'Orbitron',monospace;font-size:clamp(3rem,10vw,7rem);font-weight:900;line-height:0.9;letter-spacing:-2px;animation:fadeDown 1s ease 0.2s both}
+.hero-title .mk{display:block;color:var(--blood-bright);text-shadow:0 0 40px rgba(204,0,0,0.6),0 0 80px rgba(204,0,0,0.2)}
+.hero-title .eleven{display:block;color:var(--text);-webkit-text-stroke:2px var(--gold);text-shadow:0 0 60px rgba(255,215,0,0.15)}
+.hero-sub{font-family:'Orbitron',monospace;font-size:clamp(0.7rem,2.5vw,1rem);letter-spacing:8px;color:var(--gold-dim);margin:1.5rem 0 0.5rem;animation:fadeDown 1s ease 0.4s both;text-transform:uppercase}
+.hero-desc{font-size:1.1rem;color:var(--text-dim);letter-spacing:1px;margin-bottom:2.5rem;animation:fadeDown 1s ease 0.5s both}
+.hero-desc span{color:var(--blood-bright);font-weight:700}
+.btn-enter{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--dark);background:var(--gold);border:none;padding:16px 48px;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);cursor:pointer;transition:all 0.2s;animation:fadeDown 1s ease 0.6s both;text-decoration:none;display:inline-block}
+.btn-enter:hover{background:#fff;transform:scale(1.04);box-shadow:0 0 30px rgba(255,215,0,0.4)}
+.scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0.4;animation:pulse 2s ease-in-out infinite}
+.scroll-hint span{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px}
+.scroll-hint::after{content:'▼';font-size:14px}
+@keyframes pulse{0%,100%{opacity:0.3}50%{opacity:0.7}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── 3D CHARACTERS ARENA ── */
+.arena{position:relative;z-index:1;overflow:hidden;height:340px;background:linear-gradient(180deg,var(--dark) 0%,rgba(139,0,0,0.07) 50%,var(--dark) 100%)}
+.arena-floor{position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(180deg,transparent,rgba(139,0,0,0.12));border-top:1px solid rgba(139,0,0,0.2)}
+.arena-title{position:absolute;top:20px;left:50%;transform:translateX(-50%);font-family:'Orbitron',monospace;font-size:10px;letter-spacing:5px;color:rgba(255,215,0,0.4);white-space:nowrap;text-transform:uppercase}
+.fighter-3d{position:absolute;bottom:60px;display:flex;flex-direction:column;align-items:center;cursor:pointer;transform-style:preserve-3d}
+.fighter-3d:hover .f3d-body{transform:scale(1.1) translateY(-8px);filter:drop-shadow(0 0 20px var(--glow))}
+.f3d-body{font-size:clamp(3rem,7vw,5.5rem);transition:transform 0.3s ease,filter 0.3s ease;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.8));transform-style:preserve-3d;display:block;line-height:1}
+.f3d-shadow{width:60px;height:12px;background:radial-gradient(ellipse,rgba(0,0,0,0.5),transparent 70%);margin-top:4px;transition:transform 0.3s}
+.fighter-3d:hover .f3d-shadow{transform:scaleX(1.2)}
+.f3d-name{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--glow,var(--gold));margin-top:6px;text-transform:uppercase;opacity:0.8}
+.f3d-hp{width:60px;height:4px;background:#222;border-radius:2px;margin-top:4px;overflow:hidden}
+.f3d-hp-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--blood-bright),var(--gold))}
+
+/* ── DIVIDER ── */
+.divider{width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--blood-bright),var(--gold),var(--blood-bright),transparent);position:relative;z-index:1}
+
+/* ── INFO STRIP ── */
+.info-strip{background:var(--dark2);padding:1.5rem 2rem;display:flex;justify-content:center;gap:0;flex-wrap:wrap;position:relative;z-index:1;border-bottom:1px solid rgba(139,0,0,0.3)}
+.info-item{display:flex;align-items:center;gap:10px;padding:0.5rem 2rem;border-right:1px solid rgba(255,255,255,0.08)}
+.info-item:last-child{border-right:none}
+.info-icon{font-size:1.4rem}
+.info-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-dim);display:block;text-transform:uppercase}
+.info-val{font-size:1rem;font-weight:700;color:var(--gold);display:block}
+
+/* ── SECTION ── */
+.section{position:relative;z-index:1;padding:5rem 2rem;max-width:860px;margin:0 auto}
+.section-title{font-family:'Orbitron',monospace;font-size:clamp(1.2rem,4vw,2rem);font-weight:900;text-align:center;color:var(--text);margin-bottom:0.5rem;position:relative;display:inline-block;left:50%;transform:translateX(-50%)}
+.section-title::after{content:'';display:block;height:3px;background:linear-gradient(90deg,transparent,var(--blood-bright),var(--gold),var(--blood-bright),transparent);margin-top:8px}
+.section-sub{text-align:center;color:var(--text-dim);letter-spacing:2px;font-family:'Orbitron',monospace;font-size:10px;text-transform:uppercase;margin-bottom:3rem}
+
+/* ── FORM ── */
+.form-wrap{background:var(--dark2);border:1px solid rgba(139,0,0,0.25);border-radius:8px;padding:2.5rem;position:relative;overflow:hidden}
+.form-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blood),var(--gold),var(--blood))}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+.form-group label{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.form-group label .locked{font-size:9px;color:var(--gold-dim);letter-spacing:1px}
+.form-group input,.form-group select{background:var(--dark3);border:1px solid rgba(255,255,255,0.1);border-radius:3px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;padding:10px 14px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;width:100%}
+.form-group input:focus,.form-group select:focus{border-color:var(--blood-bright);box-shadow:0 0 0 2px rgba(204,0,0,0.15)}
+.form-group input[readonly],.form-group input[disabled]{opacity:0.6;cursor:not-allowed;border-color:rgba(255,215,0,0.15);color:var(--gold-dim)}
+.form-group select option{background:var(--dark3)}
+.btn-generate{width:100%;margin-top:1.5rem;padding:16px;font-family:'Orbitron',monospace;font-size:13px;font-weight:900;letter-spacing:5px;text-transform:uppercase;color:var(--dark);background:linear-gradient(135deg,var(--gold),#ffec6e,var(--gold));background-size:200%;border:none;clip-path:polygon(16px 0%,100% 0%,calc(100% - 16px) 100%,0% 100%);cursor:pointer;transition:all 0.3s;animation:shimmer 3s linear infinite}
+@keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+.btn-generate:hover{transform:scale(1.02);box-shadow:0 0 40px rgba(255,215,0,0.4)}
+
+/* ── NOTICE ── */
+.notice{margin-top:1.2rem;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.2);border-radius:4px;padding:0.9rem 1.2rem;font-size:0.9rem;color:var(--text-dim);text-align:center;line-height:1.6}
+.notice strong{color:var(--gold)}
+
+/* ── TICKET ── */
+.ticket-output{display:none;margin-top:3rem;animation:fadeUp 0.6s ease both}
+.ticket-output.show{display:block}
+.ticket-label{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:4px;color:var(--gold);text-align:center;margin-bottom:1rem;text-transform:uppercase;opacity:0.7}
+.ticket{max-width:640px;margin:0 auto;background:#0a0608;border:2px solid var(--blood);border-radius:8px;overflow:hidden;position:relative;box-shadow:0 0 60px rgba(139,0,0,0.3),0 0 120px rgba(139,0,0,0.1);transition:transform 0.15s ease}
+.ticket-glare{position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.03) 0%,transparent 50%,rgba(255,215,0,0.02) 100%);pointer-events:none;z-index:10;border-radius:6px}
+.ticket-header{background:linear-gradient(135deg,#1a0005 0%,#0e0008 50%,#0a0608 100%);padding:1.5rem 2rem 1.2rem;border-bottom:2px solid var(--blood);position:relative;overflow:hidden}
+.ticket-header::before{content:'MORTAL KOMBAT';position:absolute;font-family:'Orbitron',monospace;font-size:80px;font-weight:900;color:rgba(139,0,0,0.04);white-space:nowrap;top:50%;left:50%;transform:translate(-50%,-50%);letter-spacing:-2px;pointer-events:none}
+.ticket-header::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 8px,rgba(139,0,0,0.03) 8px,rgba(139,0,0,0.03) 16px);pointer-events:none}
+.tk-badge{display:inline-flex;align-items:center;gap:6px;background:var(--blood);color:var(--gold);font-family:'Orbitron',monospace;font-size:9px;font-weight:700;letter-spacing:3px;padding:4px 14px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);margin-bottom:10px;position:relative;z-index:1;text-transform:uppercase}
+.tk-school{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:rgba(255,255,255,0.5);margin-bottom:6px;position:relative;z-index:1;text-transform:uppercase}
+.tk-bigtitle{font-family:'Orbitron',monospace;font-size:clamp(1.8rem,6vw,3rem);font-weight:900;color:var(--blood-bright);line-height:0.9;position:relative;z-index:1;text-shadow:0 0 30px rgba(204,0,0,0.6)}
+.tk-bigsub{font-family:'Orbitron',monospace;font-size:clamp(0.6rem,2vw,0.8rem);letter-spacing:6px;color:var(--gold);margin-top:6px;position:relative;z-index:1;text-transform:uppercase}
+.ticket-body{padding:1.5rem 2rem;display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:start}
+.tk-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tk-field{display:flex;flex-direction:column;gap:3px}
+.tk-lbl{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:#555;text-transform:uppercase}
+.tk-val{font-size:1rem;font-weight:700;color:var(--text);letter-spacing:0.5px}
+.tk-val.hi{color:var(--gold);font-family:'Orbitron',monospace;font-size:0.85rem}
+.tk-val.ok{color:#4caf50;font-family:'Orbitron',monospace;font-size:0.8rem}
+.tk-code-block{background:rgba(0,0,0,0.4);border:1px solid #222;border-radius:6px;padding:1rem 1.2rem;text-align:center;min-width:120px}
+.tk-code-lbl{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:#444;display:block;margin-bottom:8px;text-transform:uppercase}
+.tk-code-num{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:900;color:var(--blood-bright);letter-spacing:3px;display:block;text-shadow:0 0 20px rgba(204,0,0,0.5);animation:codePulse 2s ease-in-out infinite}
+@keyframes codePulse{0%,100%{text-shadow:0 0 20px rgba(204,0,0,0.5)}50%{text-shadow:0 0 40px rgba(204,0,0,0.9),0 0 80px rgba(204,0,0,0.3)}}
+.tk-barcode{display:flex;gap:2px;margin-top:10px;justify-content:center;align-items:flex-end;height:30px}
+.ticket-div{display:flex;align-items:center;margin:0 1.5rem}
+.ticket-div::before,.ticket-div::after{content:'';flex:1;border-top:2px dashed #1e1e1e}
+.ticket-div .hole{width:20px;height:20px;background:var(--dark);border-radius:50%;border:2px solid #1e1e1e;margin:0 -10px}
+.ticket-footer{padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.3)}
+.tk-footer-txt{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:#333;text-transform:uppercase}
+.tk-logo{font-family:'Orbitron',monospace;font-size:10px;font-weight:900;color:var(--gold);letter-spacing:3px;opacity:0.6}
+.ticket-actions{display:flex;gap:12px;justify-content:center;margin-top:1.5rem;flex-wrap:wrap}
+.btn-download{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:13px 32px;background:var(--blood);border:1px solid var(--blood-bright);color:#fff;border-radius:3px;cursor:pointer;transition:all 0.2s;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
+.btn-download:hover{background:var(--blood-bright);box-shadow:0 0 20px rgba(204,0,0,0.5)}
+.btn-print{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:13px 32px;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);border-radius:3px;cursor:pointer;transition:all 0.2s}
+.btn-print:hover{background:rgba(255,215,0,0.08)}
+.btn-new{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:13px 32px;background:transparent;border:1px solid #333;color:var(--text-dim);border-radius:3px;cursor:pointer;transition:all 0.2s}
+.btn-new:hover{border-color:#666;color:var(--text)}
+#dl-status{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;color:var(--gold);text-align:center;margin-top:0.8rem;min-height:1.2rem;text-transform:uppercase}
+
+/* ── FOOTER ── */
+.footer{position:relative;z-index:1;text-align:center;padding:3rem 2rem;background:var(--dark2);border-top:1px solid rgba(139,0,0,0.2)}
+.footer-logo{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;color:var(--blood-bright);letter-spacing:4px;margin-bottom:0.5rem}
+.footer-text{color:var(--text-dim);font-size:0.85rem;letter-spacing:1px}
+
+@media print{
+  body{background:white}
+  .hero,.info-strip,.section-title,.section-sub,.form-wrap,.ticket-actions,.footer,#particles,body::before,.scroll-hint,.arena,.divider,#dl-status,.notice{display:none!important}
+  .ticket-output{display:block!important;margin:0}
+  .ticket{box-shadow:none;border-color:#000;max-width:100%}
+  .tk-bigtitle{color:#990000;text-shadow:none}
+  .tk-code-num{text-shadow:none;animation:none}
+  .section{padding:0}
+}
+@media(max-width:600px){
+  .form-grid{grid-template-columns:1fr}
+  .form-group.full{grid-column:1}
+  .ticket-body{grid-template-columns:1fr}
+  .tk-code-block{min-width:auto}
+  .info-strip{flex-direction:column;align-items:center}
+  .info-item{border-right:none;border-bottom:1px solid rgba(255,255,255,0.06);width:100%;justify-content:center}
+  .info-item:last-child{border-bottom:none}
+}
+</style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-tag">⚡ Jean Day · CASD JPP · 03 Jun 2026</div>
+  <h1 class="hero-title">
+    <span class="mk">MORTAL</span>
+    <span class="eleven">KOMBAT 11</span>
+  </h1>
+  <p class="hero-sub">Torneo Estudiantil Oficial</p>
+  <p class="hero-desc">Grados <span>9° — 11°</span> &nbsp;·&nbsp; Solo los más valientes entran</p>
+  <a href="#generar" class="btn-enter">⚔ Obtener tu pase</a>
+  <div class="scroll-hint"><span>Scroll</span></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 3D ARENA -->
+<div class="arena" id="arena">
+  <div class="arena-title">⚔ SELECCIONA TU GUERRERO ⚔</div>
+  <div class="arena-floor"></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- INFO STRIP -->
+<div class="info-strip">
+  <div class="info-item"><span class="info-icon">🏫</span><div><span class="info-label">Colegio</span><span class="info-val">CASD JPP</span></div></div>
+  <div class="info-item"><span class="info-icon">📅</span><div><span class="info-label">Fecha</span><span class="info-val">03 Jun 2026</span></div></div>
+  <div class="info-item"><span class="info-icon">🎮</span><div><span class="info-label">Torneo</span><span class="info-val">MK11</span></div></div>
+  <div class="info-item"><span class="info-icon">🏫</span><div><span class="info-label">Grados</span><span class="info-val">9° – 11°</span></div></div>
+  <div class="info-item"><span class="info-icon">💰</span><div><span class="info-label">Valor</span><span class="info-val">$2.000</span></div></div>
+</div>
+
+<!-- FORM SECTION -->
+<section class="section">
+  <h2 class="section-title">Obtén tu pase</h2>
+  <p class="section-sub">Completa tus datos y genera tu tarjeta de acceso anticipado</p>
+
+  <div id="generar" class="form-wrap">
+    <h3 style="font-family:'Orbitron',monospace;font-size:1rem;letter-spacing:4px;color:var(--blood-bright);margin-bottom:1.5rem;text-transform:uppercase;text-align:center">☠ Registro de combatiente</h3>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Nombre completo</label>
+        <input type="text" id="f-nombre" placeholder="Ej: Sebastián Torres Ruiz" autocomplete="off"/>
+      </div>
+      <div class="form-group">
+        <label>Grado</label>
+        <select id="f-grado">
+          <option value="9°">9°</option>
+          <option value="10°">10°</option>
+          <option value="11°">11°</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Colegio <span class="locked">🔒 fijo</span></label>
+        <input type="text" value="CASD JPP" readonly/>
+      </div>
+      <div class="form-group">
+        <label>Fecha del evento <span class="locked">🔒 fija</span></label>
+        <input type="text" value="03 / 06 / 2026" readonly/>
+      </div>
+      <div class="form-group">
+        <label>Valor Jean Day <span class="locked">🔒 fijo</span></label>
+        <input type="text" value="$2.000 COP" readonly/>
+      </div>
+    </div>
+    <button class="btn-generate" onclick="generarPase()">⚡ GENERAR PASE DE COMBATE</button>
+    <div class="notice">
+      ⚠ <strong>Importante:</strong> Este pase es tu registro anticipado. El pago de <strong>$2.000</strong> se realiza el día del jean day directamente en el colegio. No se cobra nada en línea.
+    </div>
+  </div>
+
+  <!-- TICKET -->
+  <div class="ticket-output" id="ticket-out">
+    <p class="ticket-label">— tu pase de acceso anticipado —</p>
+    <div class="ticket" id="ticket-card" onmousemove="tiltCard(event)" onmouseleave="resetTilt()">
+      <div class="ticket-glare"></div>
+      <div class="ticket-header">
+        <div class="tk-badge">⚡ Acceso Anticipado</div>
+        <div class="tk-school">CASD JPP</div>
+        <div class="tk-bigtitle">MORTAL<br>KOMBAT<span style="color:var(--gold);font-size:0.45em;letter-spacing:4px;display:block;margin-top:4px">11</span></div>
+        <div class="tk-bigsub">Jean Day · Torneo Estudiantil · 03 Jun 2026</div>
+      </div>
+      <div class="ticket-body">
+        <div class="tk-cols">
+          <div class="tk-field"><span class="tk-lbl">Participante</span><span class="tk-val" id="tk-nombre">—</span></div>
+          <div class="tk-field"><span class="tk-lbl">Grado</span><span class="tk-val hi" id="tk-grado">9°</span></div>
+          <div class="tk-field"><span class="tk-lbl">Fecha</span><span class="tk-val hi">03 Jun 2026</span></div>
+          <div class="tk-field"><span class="tk-lbl">Valor</span><span class="tk-val hi">$2.000 COP</span></div>
+          <div class="tk-field"><span class="tk-lbl">Evento</span><span class="tk-val hi">Jean Day</span></div>
+          <div class="tk-field"><span class="tk-lbl">Estado</span><span class="tk-val ok">✓ Válido</span></div>
+        </div>
+        <div class="tk-code-block">
+          <span class="tk-code-lbl">Código</span>
+          <span class="tk-code-num" id="tk-code">MK-0000</span>
+          <div class="tk-barcode" id="tk-barcode"></div>
+        </div>
+      </div>
+      <div class="ticket-div"><div class="hole"></div><div class="hole"></div></div>
+      <div class="ticket-footer">
+        <span class="tk-footer-txt">Presentar al ingreso</span>
+        <span class="tk-logo">MK11 · CASD JPP</span>
+        <span class="tk-footer-txt">No transferible</span>
+      </div>
+    </div>
+
+    <div id="dl-status"></div>
+    <div class="ticket-actions">
+      <button class="btn-download" onclick="descargarPase()">📸 Descargar imagen</button>
+      <button class="btn-print" onclick="window.print()">🖨 Imprimir</button>
+      <button class="btn-new" onclick="nuevoTicket()">↺ Nuevo pase</button>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-logo">MK11</div>
+  <p class="footer-text">Jean Day Estudiantil · CASD JPP · 03 Junio 2026</p>
+  <p style="color:#333;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;margin-top:8px">FINISH HIM</p>
+</footer>
+
+<script>
+// ── PARTICLES ──
+(function(){
+  const canvas=document.getElementById('particles');
+  const ctx=canvas.getContext('2d');
+  let W,H,ps=[];
+  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+  resize();window.addEventListener('resize',resize);
+  class P{
+    reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.size=Math.random()*1.5+0.3;this.vx=(Math.random()-0.5)*0.3;this.vy=-Math.random()*0.5-0.1;this.life=1;this.decay=Math.random()*0.004+0.001;this.color=Math.random()>0.7?'#FFD700':'#8B0000'}
+    update(){this.x+=this.vx;this.y+=this.vy;this.life-=this.decay;if(this.life<=0||this.y<-10)this.reset()}
+    draw(){ctx.save();ctx.globalAlpha=this.life*0.6;ctx.fillStyle=this.color;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();ctx.restore()}
+  }
+  for(let i=0;i<80;i++){const p=new P();p.reset();ps.push(p)}
+  function animate(){ctx.clearRect(0,0,W,H);ps.forEach(p=>{p.update();p.draw()});requestAnimationFrame(animate)}
+  animate();
+})();
+
+// ── 3D ARENA FIGHTERS ──
+(function(){
+  const arena=document.getElementById('arena');
+  const fighters=[
+    {emoji:'🥷',name:'Scorpion',color:'#ff6600',hp:95},
+    {emoji:'🧊',name:'Sub-Zero',color:'#4fc3f7',hp:90},
+    {emoji:'⚡',name:'Raiden',color:'#9c27b0',hp:85},
+    {emoji:'🗡️',name:'Kitana',color:'#e91e63',hp:88},
+    {emoji:'💀',name:'Shao Kahn',color:'#8B0000',hp:100},
+    {emoji:'🌑',name:'Noob Saibot',color:'#7c4dff',hp:87},
+  ];
+
+  fighters.forEach((f,i)=>{
+    const el=document.createElement('div');
+    el.className='fighter-3d';
+    el.style.cssText=`--glow:${f.color};left:${8+i*(84/fighters.length)}%;animation:float3d${i} ${3+i*0.4}s ease-in-out infinite`;
+    el.innerHTML=`
+      <span class="f3d-body">${f.emoji}</span>
+      <div class="f3d-shadow"></div>
+      <div class="f3d-name">${f.name}</div>
+      <div class="f3d-hp"><div class="f3d-hp-fill" style="width:${f.hp}%;background:linear-gradient(90deg,${f.color},#FFD700)"></div></div>`;
+
+    // CSS animation per fighter
+    const style=document.createElement('style');
+    const offset=6+i*1.5;
+    style.textContent=`@keyframes float3d${i}{0%,100%{transform:translateY(0) rotateY(0deg)}25%{transform:translateY(-${offset}px) rotateY(8deg)}75%{transform:translateY(-${Math.round(offset*0.5)}px) rotateY(-8deg)}}`;
+    document.head.appendChild(style);
+    arena.appendChild(el);
+  });
+})();
+
+// ── TILT ──
+function tiltCard(e){
+  const c=document.getElementById('ticket-card');
+  const r=c.getBoundingClientRect();
+  const x=(e.clientX-r.left)/r.width-0.5;
+  const y=(e.clientY-r.top)/r.height-0.5;
+  c.style.transform=`perspective(900px) rotateY(${x*12}deg) rotateX(${-y*12}deg) scale(1.02)`;
+}
+function resetTilt(){
+  document.getElementById('ticket-card').style.transform='perspective(900px) rotateY(0deg) rotateX(0deg) scale(1)';
+}
+
+// ── GENERATE ──
+function genCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c='MK-';
+  for(let i=0;i<4;i++)c+=chars[Math.floor(Math.random()*chars.length)];
+  return c;
+}
+function genBars(){
+  const bc=document.getElementById('tk-barcode');
+  bc.innerHTML='';
+  [12,6,14,4,10,7,14,8,12,5,16,6,10,4,14,7,12,6,10,8].forEach((h,i)=>{
+    const b=document.createElement('div');
+    b.className='bar';
+    b.style.cssText=`width:${i%3===0?3:1.5}px;height:${h}px;border-radius:1px;background:var(--blood-bright)`;
+    bc.appendChild(b);
+  });
+}
+function generarPase(){
+  const nombre=document.getElementById('f-nombre').value.trim();
+  if(!nombre){
+    const inp=document.getElementById('f-nombre');
+    inp.style.borderColor='var(--blood-bright)';
+    inp.placeholder='⚠ Escribe tu nombre primero';
+    inp.focus();return;
+  }
+  document.getElementById('f-nombre').style.borderColor='';
+  document.getElementById('tk-nombre').textContent=nombre;
+  document.getElementById('tk-grado').textContent=document.getElementById('f-grado').value;
+  document.getElementById('tk-code').textContent=genCode();
+  genBars();
+  const out=document.getElementById('ticket-out');
+  out.classList.add('show');
+  document.getElementById('dl-status').textContent='';
+  setTimeout(()=>out.scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+function nuevoTicket(){
+  document.getElementById('ticket-out').classList.remove('show');
+  document.getElementById('f-nombre').value='';
+  document.getElementById('generar').scrollIntoView({behavior:'smooth'});
+}
+
+// ── DOWNLOAD AS IMAGE ──
+function descargarPase(){
+  const statusEl=document.getElementById('dl-status');
+  statusEl.textContent='⏳ Generando imagen...';
+  const card=document.getElementById('ticket-card');
+  // Temporarily remove tilt transform
+  const prevTransform=card.style.transform;
+  card.style.transform='none';
+
+  html2canvas(card,{
+    backgroundColor:'#0a0608',
+    scale:2,
+    useCORS:true,
+    logging:false
+  }).then(canvas=>{
+    card.style.transform=prevTransform;
+    const nombre=document.getElementById('f-nombre').value.trim().replace(/\s+/g,'-').toLowerCase()||'combatiente';
+    const code=document.getElementById('tk-code').textContent;
+    const link=document.createElement('a');
+    link.download=`pase-mk11-${nombre}-${code}.png`;
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    statusEl.textContent='✓ Imagen descargada correctamente';
+    setTimeout(()=>statusEl.textContent='',3000);
+  }).catch(()=>{
+    card.style.transform=prevTransform;
+    statusEl.textContent='⚠ Error al generar. Usa el botón Imprimir.';
+  });
+}
+</script>
+</body>
+</html>
